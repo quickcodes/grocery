@@ -1,10 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
+// import 'package:flutter/src/widgets/container.dart';
+// import 'package:flutter/src/widgets/framework.dart';
 import 'dart:developer' as dev show log;
 
 import 'package:grocery/constants/routes.dart';
+import 'package:grocery/utilities/dialogs/show_popup_dialog.dart';
 
 class VerifyEmailView extends StatefulWidget {
   const VerifyEmailView({super.key});
@@ -29,6 +30,11 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
               await user?.sendEmailVerification();
               dev.log("Email send");
               dev.log((user?.email).toString());
+              await showPopupDialog(
+                context,
+                "Email Sent",
+                "We have sent a verification email, Please Verify Yourself",
+              );
             },
             child: const Text("Send Email Verification"),
           ),

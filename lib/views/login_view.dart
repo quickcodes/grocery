@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:grocery/constants/routes.dart';
 import 'dart:developer' as dev show log;
 
+import 'package:grocery/utilities/dialogs/show_popup_dialog.dart';
+
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
 
@@ -70,14 +72,29 @@ class _LoginViewState extends State<LoginView> {
               } on FirebaseAuthException catch (e) {
                 if (e.code == "user-not-found") {
                   dev.log("User not found");
-                  _showToast(context, "User not found");
+                  await showPopupDialog(
+                    context,
+                    "An Error occured",
+                    "User Not Found",
+                  );
                 } else if (e.code == "wrong-password") {
                   dev.log("Wrong password");
-                  _showToast(context, "Wrong Password");
+                  await showPopupDialog(
+                    context,
+                    "An Error occured",
+                    "Wrong password",
+                  );
                 } else {
                   dev.log("SOMETHING WENT WRONG");
-                  _showToast(context, "SOMETHING WENT WRONG");
+                  await showPopupDialog(
+                    context,
+                    "An Error occured",
+                    "SOMETHING WENT WRONG ${e.code}",
+                  );
                 }
+              } catch (e) {
+                await showPopupDialog(
+                    context, "An Error occured", "Error: ${e.toString()}");
               }
             },
             child: const Text("Login"),

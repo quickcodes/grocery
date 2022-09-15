@@ -5,7 +5,10 @@ import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:grocery/constants/routes.dart';
 import 'package:grocery/enums/menu_action.dart';
+import 'package:grocery/utilities/dialogs/logout_dialog.dart';
 import 'dart:developer' as dev show log;
+
+import 'package:grocery/utilities/dialogs/show_popup_dialog.dart';
 
 class GroceryView extends StatefulWidget {
   const GroceryView({super.key});
@@ -37,7 +40,11 @@ class _GroceryViewState extends State<GroceryView> {
                   }
                   break;
                 case MenuAction.setting:
-                  _showToast(context, "Clicked on setting");
+                  showPopupDialog(
+                    context,
+                    "Setting",
+                    "This section is under work",
+                  );
                 // break;
               }
             },
@@ -62,30 +69,6 @@ class _GroceryViewState extends State<GroceryView> {
         ],
       ),
     );
-  }
-
-  Future<bool> showLogOutDailog(BuildContext context) {
-    return showDialog<bool>(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text("Log Out"),
-          content: const Text("Are you sure you want to log out?"),
-          actions: [
-            TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop(false);
-                },
-                child: const Text("Cancel")),
-            TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop(true);
-                },
-                child: const Text("Log out")),
-          ],
-        );
-      },
-    ).then((value) => value ?? false);
   }
 
   void _showToast(BuildContext context, String msg) {
