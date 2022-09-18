@@ -1,11 +1,11 @@
-import 'package:firebase_auth/firebase_auth.dart';
-// import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-// import 'package:flutter/src/widgets/container.dart';
-// import 'package:flutter/src/widgets/framework.dart';
 import 'dart:developer' as dev show log;
 
 import 'package:grocery/constants/routes.dart';
+import 'package:grocery/services/auth/auth_exceptioins.dart';
+import 'package:grocery/services/auth/auth_provider.dart';
+import 'package:grocery/services/auth/auth_service.dart';
+import 'package:grocery/services/auth/firebase_auth_provider.dart';
 import 'package:grocery/utilities/dialogs/show_popup_dialog.dart';
 
 class RegisterView extends StatefulWidget {
@@ -65,47 +65,48 @@ class _RegisterViewState extends State<RegisterView> {
               final password = _password.text;
 
               try {
-                final UserCredential = await FirebaseAuth.instance
-                    .createUserWithEmailAndPassword(
-                        email: email, password: password);
-                // final user = FirebaseAuth.instance.currentUser;
-
-                // final user = FirebaseAuth.instance.currentUser;
-                // await user?.sendEmailVerification();
-                // _showToast(context, "Email Send");
-                // _showToast(context, (user?.email).toString());
-                // dev.log("Email send");
-                // dev.log((user?.email).toString());
+                final UserCredential = await AuthService.firebase()
+                    .createUser(email: email, password: password);
+                // // send email verification on registration
+                // final user = AuthService.firebase().currentUser;
+                // AuthService.firebase().sendEmailVerification();
 
                 Navigator.of(context).pushNamedAndRemoveUntil(
                     verifyEmailRoute, (route) => false);
-              } on FirebaseAuthException catch (e) {
-                if (e.code == "weak-password") {
-                  dev.log("Weak password");
-                  await showPopupDialog(
-                    context,
-                    "An Error occured",
-                    "Weak password",
-                  );
-                } else if (e.code == "email-already-in-use") {
-                  dev.log("This email is already in use");
-                  await showPopupDialog(
-                    context,
-                    "An Error occured",
-                    "This email is already in use",
-                  );
-                  _showToast(context, "This email is already in use");
-                } else if (e.code == 'invalid-email') {
-                  dev.log("Invalid email");
-                  await showPopupDialog(
-                    context,
-                    "An Error occured",
-                    "Invalid email",
-                  );
-                }
+              } on WeakPasswordAuthException {
+                await showPopupDialog(
+                  context,
+                  "An Error occured",
+                  "Weak password",
+                );
+              } on EmailAlreadyInUseAuthException {
+                await showPopupDialog(
+                  context,
+                  "An Error occured",
+                  "This email is already in use",
+                );
+              } on InvalidEmailAuthException {
+                await showPopupDialog(
+                  context,
+                  "An Error occured",
+                  "Invalid email",
+                );
+              } on GenericAuthException {
+                await showPopupDialog(
+                  context,
+                  "An error occured",
+                  "SOMETHING WENT WRONG",
+                );
               }
             },
             child: const Text("Register"),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context)
+                  .pushNamedAndRemoveUntil(loginRoute, (route) => false);
+            },
+            child: const Text("Login"),
           )
         ],
       ),

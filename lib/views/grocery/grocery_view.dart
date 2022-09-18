@@ -1,10 +1,9 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:grocery/constants/routes.dart';
 import 'package:grocery/enums/menu_action.dart';
+import 'package:grocery/services/auth/auth_service.dart';
 import 'package:grocery/utilities/dialogs/logout_dialog.dart';
 import 'dart:developer' as dev show log;
 
@@ -32,7 +31,7 @@ class _GroceryViewState extends State<GroceryView> {
                   final shouldLogout = await showLogOutDailog(context);
                   dev.log(shouldLogout.toString());
                   if (shouldLogout) {
-                    await FirebaseAuth.instance.signOut();
+                    await AuthService.firebase().logOut();
                     Navigator.of(context).pushNamedAndRemoveUntil(
                       loginRoute,
                       (_) => false,

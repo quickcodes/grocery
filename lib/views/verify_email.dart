@@ -1,10 +1,8 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-// import 'package:flutter/src/widgets/container.dart';
-// import 'package:flutter/src/widgets/framework.dart';
 import 'dart:developer' as dev show log;
 
 import 'package:grocery/constants/routes.dart';
+import 'package:grocery/services/auth/auth_service.dart';
 import 'package:grocery/utilities/dialogs/show_popup_dialog.dart';
 
 class VerifyEmailView extends StatefulWidget {
@@ -26,10 +24,10 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
           const Text("Please verify your email address"),
           TextButton(
             onPressed: () async {
-              final user = FirebaseAuth.instance.currentUser;
-              await user?.sendEmailVerification();
+              final user = AuthService.firebase().sendEmailVerification();
+              // await user?.sendEmailVerification();
               dev.log("Email send");
-              dev.log((user?.email).toString());
+              // dev.log((user?.email).toString());
               await showPopupDialog(
                 context,
                 "Email Sent",
@@ -47,7 +45,7 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
           ),
           TextButton(
             onPressed: () async {
-              await FirebaseAuth.instance.signOut();
+              await AuthService.firebase().logOut();
               Navigator.of(context)
                   .pushNamedAndRemoveUntil(registerRoute, (route) => false);
             },

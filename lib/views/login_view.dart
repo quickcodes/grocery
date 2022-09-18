@@ -1,8 +1,7 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-// import 'package:flutter/src/widgets/container.dart';
-// import 'package:flutter/src/widgets/framework.dart';
 import 'package:grocery/constants/routes.dart';
+import 'package:grocery/services/auth/auth_exceptioins.dart';
+import 'package:grocery/services/auth/auth_service.dart';
 import 'dart:developer' as dev show log;
 
 import 'package:grocery/utilities/dialogs/show_popup_dialog.dart';
@@ -64,10 +63,10 @@ class _LoginViewState extends State<LoginView> {
               final password = _password.text;
 
               try {
-                await FirebaseAuth.instance.signInWithEmailAndPassword(
-                    email: email, password: password);
-                final user = FirebaseAuth.instance.currentUser;
-                if (user?.emailVerified ?? false) {
+                await AuthService.firebase()
+                    .logIn(email: email, password: password);
+                final user = AuthService.firebase().currentUser;
+                if (user?.isEmailVerified ?? false) {
                   // email is verified
                   Navigator.of(context).pushNamedAndRemoveUntil(
                     groceryRoute,
@@ -82,32 +81,24 @@ class _LoginViewState extends State<LoginView> {
                     (route) => false,
                   );
                 }
-              } on FirebaseAuthException catch (e) {
-                if (e.code == "user-not-found") {
-                  dev.log("User not found");
-                  await showPopupDialog(
-                    context,
-                    "An Error occured",
-                    "User Not Found",
-                  );
-                } else if (e.code == "wrong-password") {
-                  dev.log("Wrong password");
-                  await showPopupDialog(
-                    context,
-                    "An Error occured",
-                    "Wrong password",
-                  );
-                } else {
-                  dev.log("SOMETHING WENT WRONG");
-                  await showPopupDialog(
-                    context,
-                    "An Error occured",
-                    "SOMETHING WENT WRONG ${e.code}",
-                  );
-                }
-              } catch (e) {
+              } on UserNotFoundAuthException catch (e) {
                 await showPopupDialog(
-                    context, "An Error occured", "Error: ${e.toString()}");
+                  context,
+                  "An Error occured",
+                  "User Not Found",
+                );
+              } on WrongPasswordAuthException catch (e) {
+                await showPopupDialog(
+                  context,
+                  "An Error occured",
+                  "Wrong password",
+                );
+              } on GenericAuthException catch (e) {
+                await showPopupDialog(
+                  context,
+                  "An Error occured",
+                  "SOMETHING WENT WRONG",
+                );
               }
             },
             child: const Text("Login"),
