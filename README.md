@@ -1,4 +1,4 @@
-# grocery App With Firebase Integration
+# Grocery App With Firebase Integration
 
 A new Flutter project.
 
